@@ -101,9 +101,9 @@ sudo systemctl enable ogd
 sudo systemctl restart ogd
 
 echo -e '\n\e[42mCheck node status\e[0m\n' && sleep 1
-if [[ `service namadad status | grep active` =~ "running" ]]; then
+if [[ `service ogd status | grep active` =~ "running" ]]; then
         echo -e "Your OG node \e[32minstalled and works\e[39m!"
-        echo -e "You can check node status by the command \e[7mservice namadad status\e[0m"
+        echo -e "You can check node status by the command \e[7mservice ogd status\e[0m"
         echo -e "Press \e[7mQ\e[0m for exit from status menu"
       else
         echo -e "Your OG node \e[31mwas not installed correctly\e[39m, please reinstall."
