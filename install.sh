@@ -33,7 +33,7 @@ else
         echo "Installing..."
 fi
 
-if [ ! $VALIDATOR_ALIAS ]; then
+if [ ! $OG_ALIAS ]; then
 	read -p "Enter validator name: " OG_ALIAS
 	echo 'export OG_ALIAS='\"${OG_ALIAS}\" >> $HOME/.bash_profile
 fi
