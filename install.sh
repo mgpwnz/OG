@@ -115,7 +115,7 @@ case "$response" in
     [yY][eE][sS]|[yY]) 
     sudo systemctl disable ogd.service
     sudo rm /etc/systemd/system/ogd.service
-    sudo rm -rf $HOME/0g-evmos 
+    sudo rm -rf $HOME/0g-evmos $HOME/.evmosd
     echo "Done"
     cd $HOME
     ;;
