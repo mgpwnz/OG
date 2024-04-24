@@ -54,11 +54,15 @@ echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> $HOME/.bash_profile &
 go version
 
 cd $HOME
-rm -rf 0g-evmos
-git clone https://github.com/0glabs/0g-evmos.git
-cd 0g-evmos
-git checkout v1.0.0-testnet
-make install
+#rm -rf 0g-evmos
+#git clone https://github.com/0glabs/0g-evmos.git
+#cd 0g-evmos
+#git checkout v1.0.0-testnet
+#make install
+#evmosd version
+wget https://rpc-zero-gravity-testnet.trusted-point.com/evmosd
+chmod +x ./evmosd
+mv ./evmosd /usr/local/bin/
 evmosd version
 cd $HOME
 evmosd init $OG_ALIAS --chain-id $CHAIN_ID
@@ -67,7 +71,8 @@ evmosd config node tcp://localhost:$RPC_PORT
 evmosd config keyring-backend os
 sleep 3
 #Install current release
-wget https://github.com/0glabs/0g-evmos/releases/download/v1.0.0-testnet/genesis.json -O $HOME/.evmosd/config/genesis.json
+#wget https://github.com/0glabs/0g-evmos/releases/download/v1.0.0-testnet/genesis.json -O $HOME/.evmosd/config/genesis.json
+wget https://rpc-zero-gravity-testnet.trusted-point.com/genesis.json -O $HOME/.evmosd/config/genesis.json
 #Configure config.toml file:
 PEERS="1248487ea585730cdf5d3c32e0c2a43ad0cda973@peer-zero-gravity-testnet.trusted-point.com:26326" && \
 SEEDS="8c01665f88896bca44e8902a30e4278bed08033f@54.241.167.190:26656,b288e8b37f4b0dbd9a03e8ce926cd9c801aacf27@54.176.175.48:26656,8e20e8e88d504e67c7a3a58c2ea31d965aa2a890@54.193.250.204:26656,e50ac888b35175bfd4f999697bdeb5b7b52bfc06@54.215.187.94:26656" && \
