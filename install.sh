@@ -175,9 +175,9 @@ case "$response" in
     sudo systemctl disable ogd.service
     sudo rm /etc/systemd/system/ogd.service
     sudo rm -rf $HOME/0g-evmos $HOME/.evmosd
-    sudo systemctl disable $NODE.service
-    sudo rm /etc/systemd/system/$NODE.service
-    sudo rm -rf $HOME/0g-evmos $HOME/.evmosd $HOME/0g-chain
+        sudo systemctl stop 0g
+        sudo systemctl disable 0g
+        sudo rm -rf $(which 0gchaind) $HOME/.0gchain
     echo "Done"
     cd $HOME
     ;;
