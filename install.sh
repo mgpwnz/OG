@@ -64,7 +64,14 @@ $DAEMON_NAME config keyring-backend test
 $DAEMON_NAME config chain-id zgtendermint_16600-1
 wget -O $DAEMON_HOME/config/genesis.json https://github.com/0glabs/0g-chain/releases/download/v0.1.0/genesis.json
 sed -i.bak -e "s/^seeds *=.*/seeds = \"${SEEDS}\"/" $DAEMON_HOME/config/config.toml
-
+# Set minimum gas price
+sed -i -e 's|^minimum-gas-prices *=.*|minimum-gas-prices = "0.0025ua0gi"|' $DAEMON_HOME/config/app.toml
+# Set pruning
+sed -i \
+  -e 's|^pruning *=.*|pruning = "custom"|' \
+  -e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
+  -e 's|^pruning-interval *=.*|pruning-interval = "17"|' \
+  $DAEMON_HOME/config/app.toml
 
 echo "[Unit]
 Description=$NODE Node
