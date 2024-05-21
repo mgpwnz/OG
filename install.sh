@@ -105,7 +105,7 @@ sudo systemctl enable 0gchaind.service
 sudo systemctl start 0gchaind.service
 sudo journalctl -u 0gchaind.service -f --no-hostname -o cat
 ############
-
+cd $HOME
 }
 uninstall() {
 read -r -p "You really want to delete the node? [y/N] " response
