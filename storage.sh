@@ -102,7 +102,7 @@ sudo systemctl daemon-reload && \
 sudo systemctl enable zgs && \
 sudo systemctl start zgs && \
 sudo systemctl status zgs
-
+cd $HOME
 }
 uninstall() {
 read -r -p "You really want to delete the node? [y/N] " response
