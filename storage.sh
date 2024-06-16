@@ -23,13 +23,6 @@ bash_profile=$HOME/.bash_profile
 if [ -f "$bash_profile" ]; then
 	    . $HOME/.bash_profile
 fi
-
-if [ ! $OG_ALIAS ]; then
-	read -p "Enter validator name: " OG_ALIAS
-	echo 'export OG_ALIAS='\"${OG_ALIAS}\" >> $HOME/.bash_profile
-fi
-echo 'source $HOME/.bashrc' >> $HOME/.bash_profile
-. $HOME/.bash_profile
 sleep 1
 cd $HOME
 sudo apt update
@@ -47,13 +40,15 @@ go version
 cd $HOME
 ############
 # Clone project repository
-cd && rm -rf 0g-chain
-git clone https://github.com/0glabs/0g-chain
-cd 0g-chain
-git checkout v0.1.0
+git clone https://github.com/0glabs/0g-storage-node.git
+cd $HOME/0g-storage-node
+git fetch
+git checkout tags/v0.2.0
+git submodule update — init
+sudo apt install cargo
+cargo build — release
 
-# Build binary
-make install
+
 
 # Set node CLI configuration
 0gchaind config chain-id zgtendermint_16600-1
@@ -100,11 +95,11 @@ WantedBy=multi-user.target
 EOF
 sudo systemctl daemon-reload
 sudo systemctl enable 0gchaind.service
-############
 cd $HOME
 # Start the service and check the logs
 sudo systemctl start 0gchaind.service
 sudo journalctl -u 0gchaind.service -f --no-hostname -o cat
+############
 
 }
 uninstall() {
