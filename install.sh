@@ -113,7 +113,8 @@ case "$response" in
     [yY][eE][sS]|[yY]) 
     sudo systemctl disable 0gchaind.service
     sudo rm /etc/systemd/system/0gchaind.service
-    sudo rm -rf $HOME/.0gchain $HOME/0gchain
+    sudo rm -rf $HOME/.0gchain
+    sudo rm -rf $HOME/0gchain
     echo "Done"
     cd $HOME
     ;;
