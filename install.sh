@@ -33,7 +33,7 @@ echo 'source $HOME/.bashrc' >> $HOME/.bash_profile
 sleep 1
 cd $HOME
 sudo apt update
-sudo apt install make unzip clang pkg-config git-core libudev-dev libssl-dev build-essential libclang-12-dev git jq ncdu bsdmainutils htop -y < "/dev/null"
+sudo apt install cmake make unzip clang pkg-config git-core libudev-dev libssl-dev build-essential libclang-12-dev git jq ncdu bsdmainutils htop -y < "/dev/null"
 sleep 1
 VERSION=1.21.3
 wget -O go.tar.gz https://go.dev/dl/go$VERSION.linux-amd64.tar.gz
