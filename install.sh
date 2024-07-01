@@ -9,6 +9,10 @@ while test $# -gt 0; do
             function="install"
             shift
             ;;
+        -up|--upgrade)
+            function="upgrade"
+            shift
+            ;;
         -un|--uninstall)
             function="uninstall"
             shift
@@ -50,25 +54,25 @@ cd $HOME
 cd && rm -rf 0g-chain
 git clone https://github.com/0glabs/0g-chain
 cd 0g-chain
-git checkout v0.1.0
+git checkout v0.2.3
 
 # Build binary
 make install
 
 # Set node CLI configuration
-0gchaind config chain-id zgtendermint_16600-1
+0gchaind config chain-id zgtendermint_16600-2
 0gchaind config keyring-backend test
 0gchaind config node tcp://localhost:26657
 
 # Initialize the node
-0gchaind init "$OG_ALIAS" --chain-id zgtendermint_16600-1
+0gchaind init "$OG_ALIAS" --chain-id zgtendermint_16600-2
 
 # Download genesis and addrbook files
 curl -L https://snapshots-testnet.nodejumper.io/0g-testnet/genesis.json > $HOME/.0gchain/config/genesis.json
 curl -L https://snapshots-testnet.nodejumper.io/0g-testnet/addrbook.json > $HOME/.0gchain/config/addrbook.json
 
 # Set seeds
-sed -i -e 's|^seeds *=.*|seeds = "c4d619f6088cb0b24b4ab43a0510bf9251ab5d7f@54.241.167.190:26656,44d11d4ba92a01b520923f51632d2450984d5886@54.176.175.48:26656,f2693dd86766b5bf8fd6ab87e2e970d564d20aff@54.193.250.204:26656"|' $HOME/.0gchain/config/config.toml
+sed -i -e 's|^seeds *=.*|seeds = "81987895a11f6689ada254c6b57932ab7ed909b6@54.241.167.190:26656,010fb4de28667725a4fef26cdc7f9452cc34b16d@54.176.175.48:26656,e9b4bc203197b62cc7e6a80a64742e752f4210d5@54.193.250.204:26656,68b9145889e7576b652ca68d985826abd46ad660@18.166.164.232:26656"|' $HOME/.0gchain/config/config.toml
 
 # Set minimum gas price
 sed -i -e 's|^minimum-gas-prices *=.*|minimum-gas-prices = "0.0025ua0gi"|' $HOME/.0gchain/config/app.toml
@@ -107,6 +111,39 @@ sudo systemctl start 0gchaind.service
 sudo journalctl -u 0gchaind.service -f --no-hostname -o cat
 
 }
+upgrade() {
+sudo systemctl stop 0gchaind
+
+# build new binary
+cd && rm -rf 0g-chain
+git clone -b v0.2.3 https://github.com/0glabs/0g-chain.git
+cd 0g-chain
+make install
+
+# update chain-id
+0gchaind config chain-id zgtendermint_16600-2
+
+# download new genesis and addrbook
+curl -L https://snapshots-testnet.nodejumper.io/0g-testnet/genesis.json > $HOME/.0gchain/config/genesis.json
+curl -L https://snapshots-testnet.nodejumper.io/0g-testnet/addrbook.json > $HOME/.0gchain/config/addrbook.json
+
+# set new seeds
+sed -i -e 's|^seeds *=.*|seeds = "81987895a11f6689ada254c6b57932ab7ed909b6@54.241.167.190:26656,010fb4de28667725a4fef26cdc7f9452cc34b16d@54.176.175.48:26656,e9b4bc203197b62cc7e6a80a64742e752f4210d5@54.193.250.204:26656,68b9145889e7576b652ca68d985826abd46ad660@18.166.164.232:26656"|' $HOME/.0gchain/config/config.toml
+
+# reset chain data
+0gchaind tendermint unsafe-reset-all --keep-addr-book
+
+# start
+sudo systemctl restart 0gchaind && sudo journalctl -u 0gchaind -f
+sudo journalctl -u 0gchaind -f --no-hostname -o cat
+
+
+
+
+}
+
+
+
 uninstall() {
 read -r -p "You really want to delete the node? [y/N] " response
 case "$response" in
