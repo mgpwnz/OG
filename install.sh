@@ -132,13 +132,10 @@ sed -i -e 's|^seeds *=.*|seeds = "81987895a11f6689ada254c6b57932ab7ed909b6@54.24
 
 # reset chain data
 0gchaind tendermint unsafe-reset-all --keep-addr-book
-
+cd $HOME
 # start
 sudo systemctl restart 0gchaind && sudo journalctl -u 0gchaind -f
 sudo journalctl -u 0gchaind -f --no-hostname -o cat
-
-
-
 
 }
 
