@@ -1,7 +1,7 @@
 #!/bin/bash
 # Default variables
 function="install"
-ENR_ADDRESS=$(wget -qO- eth0.me)
+BLOCKCHAIN_RPC_ENDPOINT=https://0G-rpc.nodebrand.xyz
 # Options
 option_value(){ echo "$1" | sed -e 's%^--[^=]*=%%g; s%^-[^=]*=%%g'; }
 while test $# -gt 0; do
@@ -39,13 +39,32 @@ echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> $HOME/.bash_profile &
 go version
 
 cd $HOME
+cleanup_previous_installation() {
+  echo "Cleaning up previous installation..."
+
+  sudo systemctl stop zgs || true
+  sudo systemctl disable zgs || true
+
+  sudo rm -f /etc/systemd/system/zgs.service
+
+  rm -rf $HOME/0g-storage-node
+
+  sed -i.bak '/ENR_ADDRESS/d' ~/.bash_profile
+  sed -i.bak '/ZGS_LOG_DIR/d' ~/.bash_profile
+  sed -i.bak '/LOG_CONTRACT_ADDRESS/d' ~/.bash_profile
+  sed -i.bak '/MINE_CONTRACT/d' ~/.bash_profile
+  sed -i.bak '/ZGS_LOG_SYNC_BLOCK/d' ~/.bash_profile
+  sed -i.bak '/BLOCKCHAIN_RPC_ENDPOINT/d' ~/.bash_profile
+  source ~/.bash_profile
+}
 #set vars
+ENR_ADDRESS=$(wget -qO- eth0.me)
 echo "export ENR_ADDRESS=${ENR_ADDRESS}" >> ~/.bash_profile
 echo 'export ZGS_LOG_DIR="$HOME/0g-storage-node/run/log"' >> ~/.bash_profile
-echo 'export ZGS_LOG_SYNC_BLOCK="334797"' >> ~/.bash_profile
-echo 'export LOG_CONTRACT_ADDRESS="0xb8F03061969da6Ad38f0a4a9f8a86bE71dA3c8E7"' >> ~/.bash_profile
-echo 'export MINE_CONTRACT="0x96D90AAcb2D5Ab5C69c1c351B0a0F105aae490bE"' >> ~/.bash_profile
-echo 'export BLOCKCHAIN_RPC_ENDPOINT="https://rpc-og.papadritta.com"' >> ~/.bash_profile
+echo 'export ZGS_LOG_SYNC_BLOCK="802"' >> ~/.bash_profile
+echo 'export LOG_CONTRACT_ADDRESS="0x8873cc79c5b3b5666535C825205C9a128B1D75F1"' >> ~/.bash_profile
+echo 'export MINE_CONTRACT="0x85F6722319538A805ED5733c5F4882d96F1C7384"' >> ~/.bash_profile
+echo "export BLOCKCHAIN_RPC_ENDPOINT=\"$BLOCKCHAIN_RPC_ENDPOINT\"" >> ~/.bash_profile
 
 source ~/.bash_profile
 
@@ -55,13 +74,15 @@ echo -e "\n\033[31mCHECK YOUR STORAGE NODE VARIABLES\033[0m\n\nLOG_CONTRACT_ADDR
 cd $HOME
 git clone https://github.com/0glabs/0g-storage-node.git
 cd $HOME/0g-storage-node
-git fetch
-git checkout tags/v0.3.2
+git tag -d v0.3.3
+git fetch --all --tags
+git checkout 2a2688d2c34a1e9480239e17b626912370662dcc
 git submodule update --init
 sudo apt install cargo
 cargo build --release
 # PK
 read -sp "Enter your private key: " PRIVATE_KEY && echo
+#config
 sed -i '
 s|^miner_key = ""|miner_key = "'"$PRIVATE_KEY"'"|
 s|^\s*#\?\s*network_dir\s*=.*|network_dir = "network"|
@@ -77,12 +98,13 @@ s|^\s*#\?\s*rpc_enabled\s*=.*|rpc_enabled = true|
 s|^\s*#\?\s*db_dir\s*=.*|db_dir = "db"|
 s|^\s*#\?\s*log_config_file\s*=.*|log_config_file = "log_config"|
 s|^\s*#\?\s*log_directory\s*=.*|log_directory = "log"|
-s|^\s*#\?\s*network_boot_nodes\s*=.*|network_boot_nodes = \["/ip4/54.219.26.22/udp/1234/p2p/16Uiu2HAmPxGNWu9eVAQPJww79J32pTJLKGcpjRMb4Qb8xxKkyuG1","/ip4/52.52.127.117/udp/1234/p2p/16Uiu2HAm93Hd5azfhkGBbkx1zero3nYHvfjQYM2NtiW4R3r5bE2g","/ip4/18.167.69.68/udp/1234/p2p/16Uiu2HAm2k6ua2mGgvZ8rTMV8GhpW71aVzkQWy7D37TTDuLCpgmX"]|
+s|^\s*#\?\s*network_boot_nodes\s*=.*|network_boot_nodes = \["/ip4/54.219.26.22/udp/1234/p2p/16Uiu2HAmTVDGNhkHD98zDnJxQWu3i1FL1aFYeh9wiQTNu4pDCgps","/ip4/52.52.127.117/udp/1234/p2p/16Uiu2HAkzRjxK2gorngB1Xq84qDrT4hSVznYDHj6BkbaE4SGx9oS","/ip4/18.167.69.68/udp/1234/p2p/16Uiu2HAm2k6ua2mGgvZ8rTMV8GhpW71aVzkQWy7D37TTDuLCpgmX"]|
 s|^\s*#\?\s*log_contract_address\s*=.*|log_contract_address = "'"$LOG_CONTRACT_ADDRESS"'"|
 s|^\s*#\?\s*mine_contract_address\s*=.*|mine_contract_address = "'"$MINE_CONTRACT"'"|
 s|^\s*#\?\s*log_sync_start_block_number\s*=.*|log_sync_start_block_number = '"$ZGS_LOG_SYNC_BLOCK"'|
 s|^\s*#\?\s*blockchain_rpc_endpoint\s*=.*|blockchain_rpc_endpoint = "'"$BLOCKCHAIN_RPC_ENDPOINT"'"|
 ' $HOME/0g-storage-node/run/config.toml
+
 #create service
 sudo tee /etc/systemd/system/zgs.service > /dev/null <<EOF
 [Unit]
