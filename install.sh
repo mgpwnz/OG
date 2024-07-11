@@ -148,7 +148,7 @@ case "$response" in
     sudo systemctl disable 0gchaind.service
     sudo rm /etc/systemd/system/0gchaind.service
     sudo rm -rf $HOME/.0gchain
-    sudo rm -rf $HOME/0gchain
+    sudo rm -rf $HOME/0gchain $HOME0g-chain
     echo "Done"
     cd $HOME
     ;;
