@@ -290,7 +290,7 @@ case "$response" in
     sudo systemctl disable ogd.service
     sudo rm /etc/systemd/system/ogd.service
     sudo rm -rf $HOME/.0gchain
-    sudo rm -rf $HOME0g-chain
+    sudo rm -rf $HOME/0g-chain
     echo "Done"
     cd $HOME
     ;;
