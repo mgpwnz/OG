@@ -45,7 +45,18 @@ adjust_ports() {
     exit 1
   fi
 }
-
+print_ports() {
+  echo "Ports for project $project_name:"
+  echo "  RPC $rpc_port"
+  echo "  RPC laddr $rpc_laddr_port"
+  echo "  P2P $p2p_port"
+  echo "  Prometheus $prometheus_port"
+  echo "  API $api_port"
+  echo "  gRPC $grpc_port"
+  echo "  gRPC(web) $grpc_web_port"
+  echo "  EVM RPC $evm_rpc_port"
+  echo "  EVM RPC (ws) $evm_rpc_ws_port"
+}
 
 set_env_var() {
   local var_name="$1"
