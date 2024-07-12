@@ -243,7 +243,7 @@ printCyan "Starting service..." && sleep 1
 sudo systemctl daemon-reload
 sudo systemctl enable zgs
 sudo systemctl start zgs
-
+cd $HOME
 printCyan "Check ZGS Node status..." && sleep 1
 if sudo systemctl status zgs | grep -q "active (running)"; then
   echo "Your ZGS Node is installed and works!"
