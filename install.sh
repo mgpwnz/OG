@@ -46,18 +46,6 @@ adjust_ports() {
   fi
 }
 
-print_ports() {
-  echo "Ports for project $project_name:"
-  echo "  RPC $rpc_port"
-  echo "  RPC laddr $rpc_laddr_port"
-  echo "  P2P $p2p_port"
-  echo "  Prometheus $prometheus_port"
-  echo "  API $api_port"
-  echo "  gRPC $grpc_port"
-  echo "  gRPC(web) $grpc_web_port"
-  echo "  EVM RPC $evm_rpc_port"
-  echo "  EVM RPC (ws) $evm_rpc_ws_port"
-}
 
 set_env_var() {
   local var_name="$1"
@@ -173,13 +161,11 @@ if ! exists curl; then
   sudo apt update && sudo apt install curl -y < "/dev/null"
 fi
 
-printCyan "Updating packages..." && sleep 1
+
 sudo apt update && sudo apt upgrade -y
 
-printCyan "Installing dependencies..." && sleep 1
 sudo apt-get update && sudo apt-get install -y git clang llvm ca-certificates curl build-essential binaryen protobuf-compiler libssl-dev pkg-config libclang-dev gcc unzip wget lz4 cmake jq
 
-printCyan "Installing golang..." && sleep 1
 cd $HOME && \
 ver="1.21.3" && \
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz" && \
@@ -190,7 +176,6 @@ echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile && \
 source ~/.bash_profile && \
 go version
 
-printCyan "Deleting previous installation..." && sleep 1
 sudo systemctl stop ogd
 sudo systemctl stop 0gchaind
 sudo systemctl disable 0gchaind.service
@@ -204,7 +189,7 @@ sudo rm -rf $HOME/0g-chain
 sudo rm -r $(which evmosd)
 sudo rm -r $(which 0gchaind)
 
-printCyan "Cloning & building 0gchaind binary..." && sleep 1
+
 cd $HOME
 git clone -b v0.2.3 https://github.com/0glabs/0g-chain
 cd 0g-chain
@@ -212,40 +197,40 @@ git checkout tags/v0.2.3
 make install
 source $HOME/.bash_profile
 
-printCyan "Initializing chain 0gchaind..." && sleep 1
+
 cd $HOME
 0gchaind init "$MONIKER" --chain-id "$CHAIN_ID_OG"
 0gchaind config keyring-backend test
 
-printCyan "Downloading genesis.json..." && sleep 1
+
 rm $HOME/.0gchain/config/addrbook.json $HOME/.0gchain/config/genesis.json
 sudo apt install -y unzip wget
 wget -P ~/.0gchain/config https://github.com/0glabs/0g-chain/releases/download/v0.2.3/genesis.json
 0gchaind validate-genesis
 
-printCyan "Adding seeds and peers..." && sleep 1
+
 sed -i \
     -e 's/^seeds *=.*/seeds = "59df4b3832446cd0f9c369da01f2aa5fe9647248@162.55.65.137:27956"/' \
     -e 's/^persistent_peers *=.*/persistent_peers = "5a9aac3b111f8ef78da298d747f6f79daf2b5954@31.220.75.10:12656,df4cc52fa0fcdd5db541a28e4b5a9c6ce1076ade@37.60.246.110:13456,4151763741fb533d56f51bbf56be514a2a6764f7@173.249.60.23:12656,6e044d233c4abb2cc970c8fc2e968273c38a874e@167.86.116.237:12656,5344c27c5c70ce0e821348900e365b01801f0a41@38.242.242.153:12656,5e6c41eaefd9857989b5216ae9910503483f5357@116.202.49.230:26656,d7921529d985b18096ea5cc5d023806af91fd51e@157.90.128.250:58656,d7535cad33e0c7cfc7274807862eebff32b81906@45.136.17.23:26656,55982724a7a30944215ad45924071f1efc1eef4a@116.202.174.53:26856,87050b88e0dff2df18caff484e01c32d9f6e6a49@185.209.223.108:12656,5ba403bf2183ffbc2aea2508af82041ad69cb883@195.201.242.245:12656,6a07fd41680eacfd29b63c7ce07a0f20af18bfa8@193.233.75.244:26656,3b3ddcd4de429456177b29e5ca0febe4f4c21989@75.119.139.198:26656,7e6124b7816c2fddd1e0f08bbaf0b6876230c5f4@37.27.120.13:26656,806f194271899ed818e05d63921f9032bcf96553@158.220.83.6:26656"/' \
     ~/.0gchain/config/config.toml
 
-printCyan "Configuring pruning..." && sleep 1
+
 sed -i.bak -e "s/^pruning *=.*/pruning = \"custom\"/" -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"100\"/" -e "s/^pruning-interval *=.*/pruning-interval = \"10\"/" $HOME/.0gchain/config/app.toml
 
-printCyan "Setting min gas price..." && sleep 1
+
 sed -i "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0ua0gi\"/" $HOME/.0gchain/config/app.toml
 
-printCyan "Enabling kv indexer..." && sleep 1
+
 sed -i "s/^indexer *=.*/indexer = \"kv\"/" $HOME/.0gchain/config/config.toml
 
-printCyan "Setting json-rpc..." && sleep 1
+
 sed -i -e 's/address = "127.0.0.1:8545"/address = "0.0.0.0:8545"/' -e 's|^api = ".*"|api = "eth,txpool,personal,net,debug,web3"|' $HOME/.0gchain/config/app.toml
 
 adjust_ports $rpc_port $rpc_laddr_port $p2p_port $prometheus_port $api_port $grpc_port $grpc_web_port $evm_rpc_port $evm_rpc_ws_port
 
 print_ports
 
-printCyan "Creating a service & running..." && sleep 1
+
 sudo tee /etc/systemd/system/ogd.service > /dev/null <<EOF
 [Unit]
 Description=OG Node
@@ -267,17 +252,6 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable ogd
 sudo systemctl restart ogd
-
-printLine
-
-printCyan "Checking 0g-Node status..." && sleep 1
-if systemctl is-active --quiet ogd; then
-  printf "Your ogd Node is installed and works!\n"
-  printf "You can check ogd Node status by the command 'sudo systemctl status ogd'\n"
-  printf "You can check ogd Logs by the command 'sudo journalctl -u ogd -f -o cat'\n"
-else
-  printf "Your ogd Node was not installed correctly, please reinstall by running: ./run.sh\n"
-fi
 
 }
 
