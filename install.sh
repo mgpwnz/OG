@@ -245,8 +245,6 @@ adjust_ports $rpc_port $rpc_laddr_port $p2p_port $prometheus_port $api_port $grp
 
 print_ports
 
-0gchaind keys add $WALLET_NAME --eth
-
 printCyan "Creating a service & running..." && sleep 1
 sudo tee /etc/systemd/system/ogd.service > /dev/null <<EOF
 [Unit]
@@ -280,24 +278,6 @@ if systemctl is-active --quiet ogd; then
 else
   printf "Your ogd Node was not installed correctly, please reinstall by running: ./run.sh\n"
 fi
-
-printCyan "Check and save your node information:" && sleep 1
-echo "MONIKER: $MONIKER"
-echo "WALLET_NAME: $WALLET_NAME"
-echo "IDENTITY: $IDENTITY"
-echo "WEBSITE: $WEBSITE"
-echo "EMAIL: $EMAIL"
-
-printCyan "What next?" && sleep 1
-echo -e "\nCheck if your 0g-node is fully synced by running command: 0gchaind status | jq .sync_info.catching_up"
-printCyan "must be = false" && sleep 1
-echo -e "\nRequest tokens from faucet: https://faucet.0g.ai"
-printCyan "Your address for Faucet is" && sleep 1
-echo "0x$(0gchaind debug addr $(0gchaind keys show $WALLET_NAME -a) | grep hex | awk '{print $3}')"
-echo -e "\nCheck wallet balance after your 0g-node is fully synced and you have requested tokens from the faucet: 0gchaind q bank balances $(0gchaind keys show $WALLET_NAME -a)"
-printCyan "Next - Create a validator and you are DONE!!!" && sleep 1
-
-printf "\nTo re-run the script again, use: ./run.sh\e[0m\n"
 
 }
 
