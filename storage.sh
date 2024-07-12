@@ -119,7 +119,7 @@ set_env_var "ZGS_CONTRACT_ADDRESS" "0x8873cc79c5b3b5666535C825205C9a128B1D75F1"
 set_env_var "ZGS_MINE_CONTRACT" "0x85F6722319538A805ED5733c5F4882d96F1C7384"
 set_env_var "ZGS_LOG_SYNC_BLOCK" "802"
 set_env_var "WATCH_LOOP_WAIT_TIME_MS" "1000"
-set_env_var "WALLET_NAME" "wallet"
+#set_env_var "WALLET_NAME" "wallet"
 set_env_var "ZGS_RPC" "https://rpc-og.papadritta.com"
 source ~/.bash_profile
 
