@@ -96,14 +96,7 @@ while true; do
   fi
 done
 
-while true; do
-  read -p "Enter Wallet name (WALLET_NAME): " WALLET_NAME
-  if [ -n "$WALLET_NAME" ]; then
-    break
-  else
-    echo "Wallet name (WALLET_NAME) cannot be empty. Please enter a value."
-  fi
-done
+WALLET_NAME=wallet
 
 read -p "Enter Identity (IDENTITY, press ENTER to skip): " IDENTITY
 read -p "Enter Website (WEBSITE, press ENTER to skip): " WEBSITE
