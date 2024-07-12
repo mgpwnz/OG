@@ -119,7 +119,7 @@ set_env_var "ZGS_CONTRACT_ADDRESS" "0x8873cc79c5b3b5666535C825205C9a128B1D75F1"
 set_env_var "ZGS_MINE_CONTRACT" "0x85F6722319538A805ED5733c5F4882d96F1C7384"
 set_env_var "ZGS_LOG_SYNC_BLOCK" "802"
 set_env_var "WATCH_LOOP_WAIT_TIME_MS" "1000"
-set_env_var "WALLET_STORAGE" "storage"
+set_env_var "WALLET_NAME" "wallet"
 set_env_var "ZGS_RPC" "https://rpc-og.papadritta.com"
 source ~/.bash_profile
 
@@ -169,18 +169,18 @@ update_config() {
 
 source ~/.bash_profile
 
-if [ -z "$WALLET_STORAGE" ]; then
-  echo "WALLET_STORAGE environment variable is not set. Setting it now..."
-  WALLET_STORAGE="storage"
-  echo "export WALLET_STORAGE=\"$WALLET_STORAGE\"" >> ~/.bash_profile
+if [ -z "$WALLET_NAME" ]; then
+  echo "WALLET_NAME environment variable is not set. Setting it now..."
+  WALLET_NAME="wallet"
+  echo "export WALLET_NAME=\"$WALLET_NAME\"" >> ~/.bash_profile
   source ~/.bash_profile
 
   printCyan "Adding key for storage wallet..." && sleep 1
-  KEY_OUTPUT=$(0gchaind keys add $WALLET_STORAGE --eth --keyring-backend test)
+  KEY_OUTPUT=$(0gchaind keys add $WALLET_NAME --eth --keyring-backend test)
   echo "$KEY_OUTPUT"
 
   printCyan "Extracting and storing private key for storage node..." && sleep 1
-  PRIVATE_KEY=$(0gchaind keys unsafe-export-eth-key $WALLET_STORAGE --keyring-backend test)
+  PRIVATE_KEY=$(0gchaind keys unsafe-export-eth-key $WALLET_NAME --keyring-backend test)
   if [ -z "$PRIVATE_KEY" ]; then
     echo "Failed to extract the private key. Please check if the wallet name is correct and exists."
     exit 1
@@ -189,15 +189,15 @@ if [ -z "$WALLET_STORAGE" ]; then
   update_config "$PRIVATE_KEY"
 else
 
-  WALLET_INFO=$(0gchaind keys list --keyring-backend test | grep -A 3 "name: $WALLET_STORAGE")
+  WALLET_INFO=$(0gchaind keys list --keyring-backend test | grep -A 3 "name: $WALLET_NAME")
 
   if [ -z "$WALLET_INFO" ]; then
     printCyan "Wallet storage not found. Adding key for storage wallet..." && sleep 1
-    KEY_OUTPUT=$(0gchaind keys add $WALLET_STORAGE --eth --keyring-backend test)
+    KEY_OUTPUT=$(0gchaind keys add $WALLET_NAME --eth --keyring-backend test)
     echo "$KEY_OUTPUT"
 
     printCyan "Extracting and storing private key for storage node..." && sleep 1
-    PRIVATE_KEY=$(0gchaind keys unsafe-export-eth-key $WALLET_STORAGE --keyring-backend test)
+    PRIVATE_KEY=$(0gchaind keys unsafe-export-eth-key $WALLET_NAME --keyring-backend test)
     if [ -z "$PRIVATE_KEY" ]; then
       echo "Failed to extract the private key. Please check if the wallet name is correct and exists."
       exit 1
@@ -214,7 +214,7 @@ else
     echo "Public Key: $PUBLIC_KEY"
     echo "Address: $ADDRESS"
 
-    PRIVATE_KEY=$(0gchaind keys unsafe-export-eth-key $WALLET_STORAGE --keyring-backend test)
+    PRIVATE_KEY=$(0gchaind keys unsafe-export-eth-key $WALLET_NAME --keyring-backend test)
     update_config "$PRIVATE_KEY"
   fi
 fi
@@ -254,9 +254,9 @@ else
 fi
 
 printCyan "Check and save your node information:" && sleep 1
-echo "WALLET_STORAGE: $WALLET_STORAGE"
-echo "WALLET_ADDRESS: $(0gchaind keys show $WALLET_STORAGE -a --keyring-backend test)"
-ADDRESS=$(0gchaind keys show $WALLET_STORAGE -a --keyring-backend test)
+echo "WALLET_NAME: $WALLET_NAME"
+echo "WALLET_ADDRESS: $(0gchaind keys show $WALLET_NAME -a --keyring-backend test)"
+ADDRESS=$(0gchaind keys show $WALLET_NAME -a --keyring-backend test)
 if [ -z "$ADDRESS" ]; then
   echo "Failed to get the address for storage wallet."
   exit 1
