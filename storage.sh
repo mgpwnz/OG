@@ -107,7 +107,7 @@ git clone -b v0.3.2 https://github.com/0glabs/0g-storage-node.git
 
 printCyan "Building the project..." && sleep 1
 cd $HOME/0g-storage-node
-git checkout tags/v0.3.2
+git checkout tags/v0.3.4
 git submodule update --init
 cargo build --release
 
