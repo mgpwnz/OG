@@ -91,6 +91,8 @@ sudo systemctl enable zgs
 sudo systemctl restart zgs
 sudo systemctl status zgs
 #snap
+sudo apt-get update
+sudo apt-get install wget lz4 aria2 pv -y
 sudo systemctl stop zgs
 aria2c -x5 -s4 https://vps5.josephtran.xyz/0g/storage_0gchain_snapshot.lz4
 sleep 2
