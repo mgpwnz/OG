@@ -23,7 +23,6 @@ sudo apt-get update
 sudo apt-get install -y clang cmake build-essential git cargo
 read -p "Enter your private key: " PRIVATE_KEY && echo "Private key: $PRIVATE_KEY"
 if ! exists go; then
-  printCyan "Installing Golang..." && sleep 1
   cd $HOME
   ver="1.22.0"
   wget "https://go.dev/dl/go$ver.linux-amd64.tar.gz"
@@ -35,7 +34,6 @@ if ! exists go; then
 fi
 
 if ! exists rustup; then
-  printCyan "Installing Rustup..." && sleep 1
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
   source $HOME/.cargo/env
 else
